@@ -1,4 +1,4 @@
-# CRUD Inventario
+# TUS ALAS
 
 Este proyecto es una aplicación web para la gestión de inventario y usuarios, desarrollada con Flask y MySQL. Permite a los usuarios registrarse, iniciar sesión, y gestionar productos en su inventario. Los administradores tienen privilegios adicionales para gestionar usuarios y sus roles.
 
