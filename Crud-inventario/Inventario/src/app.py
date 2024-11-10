@@ -19,7 +19,9 @@ login_manager.login_view = 'login'
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)  # Cambiado a 255
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='passenger')
     productos = db.relationship('Producto', backref='user', lazy=True)
 
 class Producto(db.Model):
@@ -27,7 +29,7 @@ class Producto(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     descripcion = db.Column(db.String(200))
     fecha_vencimiento = db.Column(db.Date)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -51,16 +53,20 @@ def index():
     productos = Producto.query.filter_by(user=current_user).all()
     return render_template('index.html', productos=productos)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
             flash('Has iniciado sesión correctamente', 'success')
-            return redirect(url_for('index'))
+            if user.email == 'admin@admin.com':
+                return redirect(url_for('admin_dashboard'))
+            else:
+                return redirect(url_for('index'))
         flash('Credenciales inválidas. Por favor, intenta de nuevo.', 'error')
     return render_template('login.html')
 
@@ -68,19 +74,18 @@ def login():
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         
-        # Verificar si el usuario ya existe
-        existing_user = User.query.filter_by(username=username).first()
+        existing_user = User.query.filter_by(email=email).first()
         if existing_user:
-            flash('El nombre de usuario ya está en uso. Por favor, elige otro.', 'error')
+            flash('El correo ya está en uso. Por favor, elige otro.', 'error')
             return render_template('register.html')
         
-        # Crear nuevo usuario
         hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password=hashed_password)
+        # Asignar el rol por defecto 'passenger'
+        new_user = User(username=username, email=email, password=hashed_password, role='passenger')
         
-        # Agregar usuario a la base de datos
         db.session.add(new_user)
         db.session.commit()
         
@@ -128,8 +133,65 @@ def eliminar(id):
     flash('Producto eliminado exitosamente')
     return redirect(url_for('index'))
 
+@app.route('/admin_dashboard')
+@login_required
+def admin_dashboard():
+    if current_user.email != 'admin@admin.com':
+        flash('Acceso denegado: Se requieren privilegios de administrador.', 'error')
+        return redirect(url_for('index'))
+    
+    users = User.query.all()
+    return render_template('admin.html', users=users, user=current_user)
+
+
+@app.route('/eliminar_usuario/<int:id>', methods=['POST'])
+@login_required
+def eliminar_usuario(id):
+    if current_user.email != 'admin@admin.com':
+        flash('Acceso denegado: Se requieren privilegios de administrador.', 'error')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(id)
+    
+    # Eliminar todos los productos asociados al usuario
+    Producto.query.filter_by(user_id=user.id).delete()
+    
+    db.session.delete(user)
+    db.session.commit()
+    flash('Usuario y sus productos eliminados exitosamente')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/update_role', methods=['POST'])
+@login_required
+def update_role():
+    user_id = request.form.get('user_id')
+    new_role = request.form.get('role')
+    
+    user = User.query.get(user_id)
+    if user:
+        user.role = new_role
+        db.session.commit()
+        flash('Rol actualizado exitosamente', 'success')
+    else:
+        flash('Error al actualizar el rol', 'error')
+    
+    return redirect(url_for('admin_dashboard'))
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        admin_email = 'admin@admin.com'
+        admin_username = 'Admin'
+        existing_admin = User.query.filter(
+            (User.email == admin_email) | (User.username == admin_username)
+        ).first()
+        
+        if not existing_admin:
+            hashed_password = generate_password_hash('admin123')
+            admin_user = User(username=admin_username, email=admin_email, password=hashed_password, role='admin')
+            db.session.add(admin_user)
+            db.session.commit()
+            print("Usuario administrador creado correctamente.")
+        
         print("Tablas creadas correctamente en MySQL")
     app.run(debug=True)

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Usuarios</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .role-icon {
+            font-size: 48px;
+            margin: 20px auto;
+            display: block;
+        }
+        .carousel-item {
+            text-align: center;
+        }
+        .admin-name {
+            color: green;
+        }
+        .airline-name {
+            color: red;
+        }
+        .passenger-name {
+            color: black;
+        }
+        .user-initial {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+        }
+        .logout-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            top: 50px;
+            right: 0;
+            width: 150px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .logout-menu a {
+            text-decoration: none;
+            color: black;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .logout-menu i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Encuentra tus Alas</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Vuelos</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <div class="user-initial" id="userInitial">A</div>
+                    <div class="logout-menu" id="logoutMenu">
+                        <a href="{{ url_for('logout') }}">
+                            <i class="fas fa-arrow-left"></i> Cerrar sesión
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Administración de Usuarios</h2>
+        <table class="table table-striped mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr data-toggle="modal" data-target="#userModal" data-id="{{ user.id }}" data-username="{{ user.username }}" data-email="{{ user.email }}" data-role="{{ user.role }}">
+                    <td class="{% if user.role == 'admin' %}admin-name{% elif user.role == 'airline' %}airline-name{% else %}passenger-name{% endif %}">
+                        <i class="fas {% if user.role == 'admin' %}fa-briefcase{% elif user.role == 'airline' %}fa-plane{% else %}fa-user{% endif %} role-icon"></i>
+                        {{ user.username }}
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        {% if user.role != 'admin' %}
+                        <button class="btn btn-danger">Eliminar</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Información del Usuario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>ID:</strong> <span id="userId"></span></p>
+                    <p><strong>Nombre de Usuario:</strong> <span id="userName"></span></p>
+                    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                    <p><strong>Rol:</strong> <span id="userRole"></span></p>
+                    <form method="POST" action="{{ url_for('update_role') }}">
+                        <input type="hidden" name="user_id" id="userId">
+                        <div id="roleCarousel" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active" data-role="passenger">
+                                    <i class="fas fa-user role-icon"></i>
+                                    <p>Pasajero</p>
+                                </div>
+                                <div class="carousel-item" data-role="airline">
+                                    <i class="fas fa-plane role-icon"></i>
+                                    <p>Aerolínea</p>
+                                </div>
+                                <div class="carousel-item" data-role="admin">
+                                    <i class="fas fa-briefcase role-icon"></i>
+                                    <p>Administrador</p>
+                                </div>
+                            </div>
+                            <a class="carousel-control-prev" href="#roleCarousel" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Anterior</span>
+                            </a>
+                            <a class="carousel-control-next" href="#roleCarousel" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Siguiente</span>
+                            </a>
+                        </div>
+                        <input type="hidden" name="role" id="userRole">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Rol</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            $('#userModal').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget);
+                const id = button.data('id');
+                const username = button.data('username');
+                const email = button.data('email');
+                const role = button.data('role');
+
+                const modal = $(this);
+                modal.find('#userId').text(id);
+                modal.find('#userName').text(username);
+                modal.find('#userEmail').text(email);
+                modal.find('#userRole').text(role);
+
+                // Set the carousel to the current role
+                $('#roleCarousel .carousel-item').each(function() {
+                    if ($(this).data('role') === role) {
+                        $(this).addClass('active');
+                    } else {
+                        $(this).removeClass('active');
+                    }
+                });
+            });
+
+            // Mostrar menú de cierre de sesión
+            $('#userInitial').on('click', function() {
+                $('#logoutMenu').toggle();
+            });
+        });
+    </script>
+</body>
+</html>
