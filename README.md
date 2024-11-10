@@ -1,13 +1,18 @@
 # TUS ALAS
 
-Este proyecto es una aplicación web para la gestión de inventario y usuarios, desarrollada con Flask y MySQL. Permite a los usuarios registrarse, iniciar sesión, y gestionar productos en su inventario. Los administradores tienen privilegios adicionales para gestionar usuarios y sus roles.
+Este proyecto es una aplicación web para la gestión de vuelos y usuarios, desarrollada con Flask y MySQL. Permite a los usuarios registrarse, iniciar sesión, y gestionar vuelos en su inventario. Los administradores tienen privilegios adicionales para gestionar usuarios y sus roles.
 
 ## Características
 
 - **Autenticación de Usuarios**: Registro, inicio de sesión y cierre de sesión.
 - **Gestión de Vuelos**: Crear, editar y eliminar vuelos.
-- **Roles de Usuario**: Asignación de roles como 'admin', 'airline', y 'passenger'.
+- **Roles de Usuario**: Asignación de roles como 'admin', 'aerolinea', y 'passenger'.
 - **Interfaz de Administración**: Los administradores pueden ver y gestionar todos los usuarios.
+
+## Credenciales
+
+- **Administrador mail**: admin@admin.com
+- **Administrador contraseña**:admin123
 
 ## Tecnologías Utilizadas
 
@@ -65,3 +70,7 @@ Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request p
 ## Licencia
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+
+## Contacto
+
+-  **Correo**: andre.rosero@udla.edu.ec
