@@ -1,103 +1,67 @@
-# CRUD Inventario con Flask
+# CRUD Inventario
 
-## Descripción
-
-Este proyecto es una aplicación web CRUD para la gestión de inventarios, desarrollado con **Flask** y **MySQL**. Los usuarios pueden registrar, editar, eliminar y visualizar productos de su inventario personal. Además, la aplicación incluye un sistema de autenticación con registro de usuarios y protección de rutas.
-
-## Tabla de Contenidos
-
-1. [Características](#características)
-2. [Tecnologías Utilizadas](#tecnologías-utilizadas)
-3. [Instalación](#instalación)
-4. [Uso](#uso)
-5. [Rutas Principales](#rutas-principales)
-6. [Contribución](#contribución)
-7. [Licencia](#licencia)
+Este proyecto es una aplicación web para la gestión de inventario y usuarios, desarrollada con Flask y MySQL. Permite a los usuarios registrarse, iniciar sesión, y gestionar productos en su inventario. Los administradores tienen privilegios adicionales para gestionar usuarios y sus roles.
 
 ## Características
 
-- Registro e inicio de sesión de usuarios.
-- Operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para productos del inventario.
-- Autenticación con **Flask-Login**.
-- Protección de rutas, solo accesibles a usuarios autenticados.
-- Validación de permisos de usuario para editar/eliminar productos.
-- Plantillas HTML personalizadas usando **Jinja2**.
-- Conexión a base de datos MySQL para almacenamiento de datos.
+- **Autenticación de Usuarios**: Registro, inicio de sesión y cierre de sesión.
+- **Gestión de Vuelos**: Crear, editar y eliminar vuelos.
+- **Roles de Usuario**: Asignación de roles como 'admin', 'airline', y 'passenger'.
+- **Interfaz de Administración**: Los administradores pueden ver y gestionar todos los usuarios.
 
 ## Tecnologías Utilizadas
 
-- **Flask**: Framework web de Python.
-- **Flask-SQLAlchemy**: ORM para manejar la base de datos.
-- **Flask-Login**: Gestión de sesiones de usuarios.
-- **MySQL**: Base de datos relacional.
-- **Jinja2**: Motor de plantillas para HTML.
+- **Backend**: Flask
+- **Base de Datos**: MySQL
+- **Frontend**: HTML, CSS, Bootstrap
+- **Autenticación**: Flask-Login
+- **Seguridad**: Werkzeug para el hash de contraseñas
 
 ## Instalación
 
-### Requisitos Previos
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/tu_usuario/Crud-inventario.git
+   ```
 
-Antes de comenzar, asegúrate de tener instalado:
+2. Navega al directorio del proyecto:
+   ```bash
+   cd Crud-inventario/Inventario
+   ```
 
-- **Python 3.x**
-- **MySQL**
-- **Git**
+3. Instala las dependencias:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Clonar el Repositorio
+4. Configura la base de datos en `src/app.py` y `src/database.py` con tus credenciales de MySQL.
 
-```bash
-git clone https://github.com/MateoRosero/Crud-inventario.git
-cd Crud-inventario/Inventario/src
+5. Crea las tablas de la base de datos:
+   ```bash
+   python src/app.py
+   ```
 
-## Navega al directorio del proyecto
+## Uso
 
-- cd Crud-inventario/Inventario/src
+1. Ejecuta la aplicación:
+   ```bash
+   python src/app.py
+   ```
 
-## Instalar las dependencias
+2. Abre tu navegador y ve a `http://localhost:5000`.
 
-- pip install -r requirements.txt
+3. Regístrate o inicia sesión para comenzar a usar la aplicación.
 
-## Configurar las credenciales de la base de datos
+## Estructura del Proyecto
 
-- app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://TU_USUARIO:TU_CONTRASEÑA@localhost/dbInventario'
+- `src/app.py`: Archivo principal de la aplicación Flask.
+- `src/templates/`: Contiene las plantillas HTML para las diferentes vistas.
+- `src/database.py`: Configuración de la conexión a la base de datos MySQL.
 
-## Iniciar la aplicación
+## Contribuciones
 
-- python app.py
+Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request para discutir cualquier cambio que desees realizar.
 
-## Uso de la aplicación
+## Licencia
 
-## Registro de usuarios
-
-- Dirígete a la página de registro en http://127. 0.0.1:5000/register.
-- Crea un nuevo usuario con un nombre de usuario y contraseña.
-
-## Iniciar sesión
-
-- Inicia sesión en la página http://127.0.0.1:5000/login.
-- Una vez autenticado, serás redirigido a la página principal del inventario.
-
-## Gestión de productos
-
-- Crear un nuevo producto : En la página principal del inventario, rellene el formulario de creación con el nombre del producto, la descripción y la fecha de vencimiento.
-- Editar producto : Haz clic en el enlace "Editar" junto al producto que deseas modificar.
-- Eliminar producto : Haga clic en "Eliminar" y confirme la eliminación del producto.
-
-## Estructura del proyecto
-
-Inventario/
-│
-├── src/
-│   ├── __pycache__/
-│   ├── templates/
-│   │   ├── editar_producto.html
-│   │   ├── index.html
-│   │   ├── login.html
-│   │   └── register.html
-│   ├── app.py
-│   └── database.py
-└── instance/
-    └── inventario.db
-
-- app.py: Contiene la lógica principal de la aplicación, rutas y manejo de usuarios y productos.
-- database.py: Archivo de conexión a la base de datos MySQL.
-- templates/: Carpeta que contiene las plantillas HTML para el frontend.
+Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
